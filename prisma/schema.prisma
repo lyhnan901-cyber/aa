@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  phone        String?
+  password     String
+  role         String    @default("user")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  analyses     Analysis[]
+  payments     Payment[]
+}
+
+model Analysis {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+
+  platform         String
+  accountUrl       String
+  businessType     String
+  country          String
+  city             String
+  targetAudience   String
+  adBudget         String
+  mainGoal         String
+
+  status           String   @default("pending")
+
+  overallScore     Int?
+  identityScore    Int?
+  contentScore     Int?
+  engagementScore  Int?
+  trustScore       Int?
+  salesScore       Int?
+  adsScore         Int?
+  messageScore     Int?
+
+  mainProblem      String?
+  mainOpportunity  String?
+
+  awarenessLevel   String?
+  attractionLevel  String?
+  trustLevel       String?
+  purchaseLevel    String?
+  loyaltyLevel     String?
+
+  strengths        String?
+  weaknesses       String?
+  recommendations  String?
+  plan30Days       String?
+  adPlan           String?
+  competitorAnalysis String?
+  fullReport       String?
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  payments         Payment[]
+}
+
+model Payment {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  analysisId   String
+  analysis     Analysis @relation(fields: [analysisId], references: [id])
+
+  packageType  String
+  amount       Float
+  currency     String   @default("USD")
+  status       String   @default("pending")
+  method       String?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Package {
+  id          String  @id @default(cuid())
+  name        String
+  nameAr      String
+  price       Float
+  currency    String  @default("USD")
+  features    String
+  badge       String?
+  isActive    Boolean @default(true)
+  sortOrder   Int     @default(0)
+}
+
+model Coupon {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  discount    Float
+  discountType String  @default("percentage")
+  maxUses     Int      @default(100)
+  usedCount   Int      @default(0)
+  isActive    Boolean  @default(true)
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+}
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
