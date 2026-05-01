@@ -171,7 +171,14 @@ export async function runAnalysis(input: AnalysisInput): Promise<AnalysisResult>
   const purchaseScore = generateScore(20, 70);
   const loyaltyScore = generateScore(30, 75);
 
-  const category = input.businessType.toLowerCase();
+  const businessTypeMap: Record<string, string> = {
+    "مطعم": "restaurant",
+    "متجر": "store",
+    "عيادة": "clinic",
+    "مؤسسة خدمات": "services",
+    "صانع محتوى": "content",
+  };
+  const category = businessTypeMap[input.businessType] || "default";
   const problems = problemTemplates[category] || problemTemplates.default;
   const mainProblem = problems[Math.floor(Math.random() * problems.length)];
 

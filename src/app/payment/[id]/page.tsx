@@ -88,15 +88,30 @@ export default function PaymentPage() {
   const [processing, setProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  function handlePurchase() {
+  async function handlePurchase() {
     if (selectedPackage === "free") {
       return;
     }
     setProcessing(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch(`/api/payment/${params.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          packageType: selectedPackage,
+          method: paymentMethod,
+        }),
+      });
+      if (res.ok) {
+        setShowSuccess(true);
+      } else {
+        alert("حدث خطأ في معالجة الدفع");
+      }
+    } catch {
+      alert("حدث خطأ في الاتصال");
+    } finally {
       setProcessing(false);
-      setShowSuccess(true);
-    }, 2000);
+    }
   }
 
   if (showSuccess) {
